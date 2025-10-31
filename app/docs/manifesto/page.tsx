@@ -443,48 +443,64 @@ both your power and your responsibility.`
                 </div>
                 
                 <div className="space-y-4 text-green-300 font-mono text-base leading-relaxed">
-                  {prometheusText.split(/\n\n+/).map((paragraph, pIdx) => (
-                    <p key={pIdx}>
-                      {paragraph.split(/(\s+)/).map((wordOrSpace, wIdx) => {
-                        const isWord = wordOrSpace.trim().length > 0
-                        const globalIdx = prometheusText
-                          .split(/(\s+)/)
-                          .slice(0, prometheusText.split(/(\s+)/).indexOf(wordOrSpace))
-                          .filter(w => w.trim().length > 0).length
-                        
-                        if (!isWord) {
-                          return <span key={wIdx}>{wordOrSpace}</span>
-                        }
-                        
-                        const isHighlighted = globalIdx === currentWordIndex
-                        
-                        return (
-                          <span
-                            key={wIdx}
-                            ref={(el) => {
-                              if (el && isWord) {
-                                wordElementsRef.current.set(globalIdx, el)
-                              }
-                            }}
-                            className={`
-                              transition-all duration-75
-                              ${isHighlighted 
-                                ? 'text-green-400 font-bold bg-green-400/20 px-1 rounded' 
-                                : 'text-green-300'
-                              }
-                            `}
-                            style={{
-                              textShadow: isHighlighted 
-                                ? '0 0 8px rgba(0, 255, 0, 0.6), 0 0 12px rgba(0, 255, 0, 0.4)' 
-                                : 'none',
-                            }}
-                          >
-                            {wordOrSpace}
-                          </span>
-                        )
-                      })}
-                    </p>
-                  ))}
+                  {(() => {
+                    // Split into words for indexing
+                    const allWords = prometheusText.split(/(\s+)/)
+                    let wordCounter = 0
+                    
+                    // Split by double newlines to preserve paragraph structure
+                    return prometheusText.split(/\n\n+/).map((paragraph, pIdx) => {
+                      const paragraphWords = paragraph.split(/(\s+)/)
+                      
+                      return (
+                        <p key={pIdx}>
+                          {paragraphWords.map((wordOrSpace, wIdx) => {
+                            const isWord = wordOrSpace.trim().length > 0
+                            let currentWordIndex_local = wordCounter
+                            
+                            if (isWord) {
+                              wordCounter++
+                            }
+                            
+                            if (!isWord) {
+                              return <span key={`${pIdx}-${wIdx}`}>{wordOrSpace}</span>
+                            }
+                            
+                            const isHighlighted = (currentWordIndex_local - 1) === currentWordIndex
+                            
+                            return (
+                              <span
+                                key={`${pIdx}-${wIdx}`}
+                                ref={(el) => {
+                                  if (el && isWord) {
+                                    wordElementsRef.current.set(currentWordIndex_local - 1, el)
+                                    // Scroll into view if highlighted
+                                    if (isHighlighted) {
+                                      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                                    }
+                                  }
+                                }}
+                                className={`
+                                  transition-all duration-75
+                                  ${isHighlighted 
+                                    ? 'text-green-400 font-bold bg-green-400/20 px-1 rounded' 
+                                    : 'text-green-300'
+                                  }
+                                `}
+                                style={{
+                                  textShadow: isHighlighted 
+                                    ? '0 0 8px rgba(0, 255, 0, 0.6), 0 0 12px rgba(0, 255, 0, 0.4)' 
+                                    : 'none',
+                                }}
+                              >
+                                {wordOrSpace}
+                              </span>
+                            )
+                          })}
+                        </p>
+                      )
+                    })
+                  })()}
                   
                   <p>
                     For millennia, creation required teams. Tribes. Hierarchies. Permission structures. 
