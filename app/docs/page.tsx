@@ -54,9 +54,12 @@ export default function DocsPage() {
               It coordinates intelligence the way Unix coordinated programs. 
               Each tool is a capability. Each agent is a userland program. Each interaction is a process.
             </p>
-            <p className="text-green-300 mb-4">
+            <p className="text-green-300 mb-4 space-x-4">
               <Link href="/docs/manifesto" className="text-green-400 hover:underline">
                 Read the Manifesto →
+              </Link>
+              <Link href="/docs/guide" className="text-green-400 hover:underline">
+                User Guide →
               </Link>
             </p>
           </section>

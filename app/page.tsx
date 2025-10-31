@@ -38,9 +38,12 @@ export default function Home() {
           </h1>
 
           {/* Description */}
-          <p className="text-xl md:text-2xl text-green-300 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-green-300 max-w-2xl mx-auto leading-relaxed mb-4">
             A full-stack agent template built with Next.js and Claude Agent SDK.
             Build intelligent applications with modular tools and futuristic interfaces.
+          </p>
+          <p className="text-lg text-green-400/80 max-w-xl mx-auto">
+            The operating system for building intelligent products.
           </p>
 
           {/* Buttons */}
