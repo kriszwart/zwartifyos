@@ -10,6 +10,7 @@ export default function UserGuidePage() {
     { id: "getting-started", label: "Getting Started" },
     { id: "using-agents", label: "Using Agents" },
     { id: "workflow", label: "ACCV Workflow" },
+    { id: "sync", label: "Auto-Sync" },
     { id: "examples", label: "Examples" },
     { id: "troubleshooting", label: "Troubleshooting" },
   ]
@@ -346,6 +347,199 @@ export default function UserGuidePage() {
 
                   <p className="text-green-300 mt-4 text-sm">
                     <strong className="text-green-400">API Endpoint:</strong> Visit <code className="bg-black/50 px-2 py-1 rounded border border-green-400/30">/api/sync</code> to check sync status
+                  </p>
+                </section>
+              </div>
+            )}
+
+            {activeTab === "sync" && (
+              <div className="space-y-6">
+                <section>
+                  <h3 className="text-2xl font-bold mb-4 text-green-400">Auto-Sync Claude Code for Web Changes</h3>
+                  <p className="text-green-300 mb-4">
+                    When Claude Code for Web makes changes via GitHub, automatically sync them back to your local codebase. 
+                    No manual git commands needed.
+                  </p>
+                </section>
+
+                <section>
+                  <h3 className="text-2xl font-bold mb-4 text-green-400">Quick Start</h3>
+                  <div className="bg-black/50 border border-green-400/30 p-4 rounded space-y-3">
+                    <div>
+                      <p className="text-green-400 font-bold mb-2">1. Start Automatic Sync (Recommended):</p>
+                      <pre className="bg-black/70 border border-green-400/30 p-2 rounded font-mono text-xs mt-2">
+npm run sync:watch
+                      </pre>
+                      <p className="text-green-300 text-sm mt-2 ml-4">
+                        Runs continuously in background. Checks every 30 seconds for new Claude changes. 
+                        Press Ctrl+C to stop.
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <p className="text-green-400 font-bold mb-2">2. Keep it running:</p>
+                      <p className="text-green-300 text-sm ml-4">
+                        Leave this terminal open during development. When Claude Code for Web makes changes, 
+                        they'll automatically appear in your local codebase.
+                      </p>
+                    </div>
+                  </div>
+                </section>
+
+                <section>
+                  <h3 className="text-2xl font-bold mb-4 text-green-400">Usage Modes</h3>
+                  
+                  <div className="space-y-4">
+                    <div className="bg-black/50 border border-green-400/30 p-4 rounded">
+                      <p className="text-green-400 font-bold mb-2">Watch Mode (Automatic):</p>
+                      <pre className="bg-black/70 border border-green-400/30 p-2 rounded font-mono text-xs mt-2">
+npm run sync:watch
+                      </pre>
+                      <p className="text-green-300 text-sm mt-2">
+                        <strong className="text-green-400">Best for:</strong> Active development when expecting Claude changes
+                      </p>
+                      <ul className="text-green-300 text-sm ml-6 mt-2 list-disc space-y-1">
+                        <li>Runs continuously until stopped</li>
+                        <li>Checks every 30 seconds (configurable)</li>
+                        <li>Automatically pulls when changes detected</li>
+                        <li>Colored console output shows activity</li>
+                      </ul>
+                    </div>
+
+                    <div className="bg-black/50 border border-green-400/30 p-4 rounded">
+                      <p className="text-green-400 font-bold mb-2">Check Mode (Manual):</p>
+                      <pre className="bg-black/70 border border-green-400/30 p-2 rounded font-mono text-xs mt-2">
+npm run sync:check
+                      </pre>
+                      <p className="text-green-300 text-sm mt-2">
+                        <strong className="text-green-400">Best for:</strong> Quick status check, one-time verification
+                      </p>
+                      <ul className="text-green-300 text-sm ml-6 mt-2 list-disc space-y-1">
+                        <li>Single check operation</li>
+                        <li>Reports pending changes</li>
+                        <li>Does not pull automatically</li>
+                        <li>Quick way to see sync status</li>
+                      </ul>
+                    </div>
+
+                    <div className="bg-black/50 border border-green-400/30 p-4 rounded">
+                      <p className="text-green-400 font-bold mb-2">Pull Mode (Force Sync):</p>
+                      <pre className="bg-black/70 border border-green-400/30 p-2 rounded font-mono text-xs mt-2">
+npm run sync:pull
+                      </pre>
+                      <p className="text-green-300 text-sm mt-2">
+                        <strong className="text-green-400">Best for:</strong> Force sync all branches, after being offline
+                      </p>
+                      <ul className="text-green-300 text-sm ml-6 mt-2 list-disc space-y-1">
+                        <li>Pulls all claude/* branches</li>
+                        <li>Creates local branches if missing</li>
+                        <li>Updates existing branches</li>
+                        <li>Useful for manual refresh</li>
+                      </ul>
+                    </div>
+                  </div>
+                </section>
+
+                <section>
+                  <h3 className="text-2xl font-bold mb-4 text-green-400">Configuration</h3>
+                  <p className="text-green-300 mb-4">
+                    Add these to your <code className="bg-black/50 px-2 py-1 rounded border border-green-400/30">.env.local</code> file:
+                  </p>
+                  <pre className="bg-black/50 border border-green-400/30 p-4 rounded font-mono text-sm">
+{`SYNC_ENABLED=true          # Enable/disable auto-sync (default: true)
+SYNC_INTERVAL=30000        # Polling interval in milliseconds (default: 30s)`}
+                  </pre>
+                  <p className="text-green-300 text-sm mt-4">
+                    <strong className="text-green-400">Note:</strong> The sync script only pulls when your working directory is clean 
+                    (no uncommitted changes). This prevents overwriting your work.
+                  </p>
+                </section>
+
+                <section>
+                  <h3 className="text-2xl font-bold mb-4 text-green-400">Complete Workflow</h3>
+                  <div className="bg-black/50 border border-green-400/30 p-4 rounded font-mono text-sm space-y-3">
+                    <div>
+                      <p className="text-green-400 mb-1"># Terminal 1: Start dev server</p>
+                      <p className="text-green-300">npm run dev</p>
+                    </div>
+                    <div>
+                      <p className="text-green-400 mb-1"># Terminal 2: Start sync watcher</p>
+                      <p className="text-green-300">npm run sync:watch</p>
+                    </div>
+                    <div>
+                      <p className="text-green-400 mb-1"># Code in Cursor, push to GitHub</p>
+                      <p className="text-green-300">git add . && git commit -m "feature"</p>
+                      <p className="text-green-300">git push origin feature-branch</p>
+                    </div>
+                    <div>
+                      <p className="text-green-400 mb-1"># Create PR, Claude Code for Web reviews</p>
+                      <p className="text-green-300"># Claude commits to claude/improve-feature-XXXXX</p>
+                    </div>
+                    <div>
+                      <p className="text-green-400 mb-1"># Sync script detects changes automatically</p>
+                      <p className="text-green-300"># Changes appear in your local codebase</p>
+                    </div>
+                    <div>
+                      <p className="text-green-400 mb-1"># Review and merge when ready</p>
+                      <p className="text-green-300">git checkout claude/improve-feature-XXXXX</p>
+                      <p className="text-green-300"># Review in Cursor, test locally</p>
+                    </div>
+                  </div>
+                </section>
+
+                <section>
+                  <h3 className="text-2xl font-bold mb-4 text-green-400">API Endpoint</h3>
+                  <p className="text-green-300 mb-4">
+                    Check sync status programmatically:
+                  </p>
+                  <div className="bg-black/50 border border-green-400/30 p-4 rounded space-y-2">
+                    <p className="text-green-400 font-mono text-sm">GET /api/sync</p>
+                    <p className="text-green-300 text-sm ml-4">Returns sync status and pending changes</p>
+                    <p className="text-green-400 font-mono text-sm mt-3">POST /api/sync</p>
+                    <p className="text-green-300 text-sm ml-4">Triggers sync check, returns recommended command</p>
+                  </div>
+                </section>
+
+                <section>
+                  <h3 className="text-2xl font-bold mb-4 text-green-400">Safety Features</h3>
+                  <ul className="list-disc list-inside space-y-2 text-green-300 ml-4">
+                    <li><strong className="text-green-400">Working directory protection:</strong> Only syncs when no uncommitted changes</li>
+                    <li><strong className="text-green-400">No force pushes:</strong> Never overwrites local work</li>
+                    <li><strong className="text-green-400">Branch preservation:</strong> Returns you to original branch after sync</li>
+                    <li><strong className="text-green-400">Error handling:</strong> Gracefully handles git errors</li>
+                  </ul>
+                </section>
+
+                <section>
+                  <h3 className="text-2xl font-bold mb-4 text-green-400">Troubleshooting</h3>
+                  <div className="space-y-3">
+                    <div className="bg-black/50 border border-green-400/30 p-3 rounded">
+                      <p className="text-green-400 font-bold mb-1">Sync not working?</p>
+                      <ul className="text-green-300 text-sm ml-4 mt-2 list-disc space-y-1">
+                        <li>Check <code className="bg-black/70 px-1 rounded">SYNC_ENABLED=true</code> in .env.local</li>
+                        <li>Verify git remote: <code className="bg-black/70 px-1 rounded">git remote -v</code></li>
+                        <li>Check for claude/* branches: <code className="bg-black/70 px-1 rounded">git branch -r | grep claude</code></li>
+                      </ul>
+                    </div>
+                    <div className="bg-black/50 border border-green-400/30 p-3 rounded">
+                      <p className="text-green-400 font-bold mb-1">Working directory not clean?</p>
+                      <p className="text-green-300 text-sm ml-4 mt-2">
+                        Commit or stash your changes first. Sync only works when working directory is clean for safety.
+                      </p>
+                    </div>
+                    <div className="bg-black/50 border border-green-400/30 p-3 rounded">
+                      <p className="text-green-400 font-bold mb-1">No Claude branches found?</p>
+                      <p className="text-green-300 text-sm ml-4 mt-2">
+                        Ensure Claude Code for Web has created a PR with commits. Branch names must match <code className="bg-black/70 px-1 rounded">claude/*</code> pattern.
+                      </p>
+                    </div>
+                  </div>
+                </section>
+
+                <section>
+                  <h3 className="text-2xl font-bold mb-4 text-green-400">Learn More</h3>
+                  <p className="text-green-300">
+                    For detailed information, see the <Link href="/docs/sync-workflow" className="text-green-400 hover:underline">complete sync workflow guide</Link>.
                   </p>
                 </section>
               </div>
