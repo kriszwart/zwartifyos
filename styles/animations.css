@@ -263,3 +263,33 @@
   animation: float 10s ease-in-out infinite;
 }
 
+/* Word Highlight Pulse */
+@keyframes word-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.9;
+  }
+}
+
+.word-highlight-pulse {
+  animation: word-pulse 0.6s ease-in-out;
+}
+
+/* Ripple Effect for Word Highlight */
+@keyframes word-ripple {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 0 10px rgba(0, 255, 0, 0);
+  }
+}
+
+.word-ripple {
+  animation: word-ripple 0.4s ease-out;
+}
+

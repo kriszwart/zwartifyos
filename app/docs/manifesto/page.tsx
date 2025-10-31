@@ -52,11 +52,13 @@ export default function ManifestoPage() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
   const [currentWordIndex, setCurrentWordIndex] = useState<number>(-1)
+  const [previousWordIndex, setPreviousWordIndex] = useState<number>(-1)
   const [wordTimings, setWordTimings] = useState<Array<{ word: string; startTime: number }>>([])
   const synthRef = useRef<SpeechSynthesis | null>(null)
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null)
   const highlightIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const wordElementsRef = useRef<Map<number, HTMLElement>>(new Map())
+  const lastScrollTime = useRef<number>(0)
 
   useEffect(() => {
     setIsLoaded(true)
@@ -130,9 +132,11 @@ both your power and your responsibility.`
     // Stop any existing speech
     synthRef.current.cancel()
     setCurrentWordIndex(-1)
+    setPreviousWordIndex(-1)
     if (highlightIntervalRef.current) {
       clearInterval(highlightIntervalRef.current)
     }
+    lastScrollTime.current = 0
 
     // Split text into words with positions
     const words = prometheusText.split(/(\s+)/).filter(w => w.trim().length > 0 || w.match(/\s+/))
@@ -245,10 +249,28 @@ both your power and your responsibility.`
         // Calculate timing based on utterance rate
         const baseDelay = baseTimePerWord / (utterance.rate || 0.85)
         
-        // Start highlighting words in this segment
+        // Start highlighting words in this segment with smoother progression
         highlightIntervalRef.current = setInterval(() => {
           if (localWordIndex < segmentWordCount && !isPaused) {
-            setCurrentWordIndex(segmentStartIndex + localWordIndex)
+            const newWordIndex = segmentStartIndex + localWordIndex
+            setPreviousWordIndex(currentWordIndex)
+            setCurrentWordIndex(newWordIndex)
+            
+            // Smooth scroll with throttling (only scroll every 800ms max)
+            const now = Date.now()
+            if (now - lastScrollTime.current > 800) {
+              const wordEl = wordElementsRef.current.get(newWordIndex)
+              if (wordEl) {
+                const rect = wordEl.getBoundingClientRect()
+                const isVisible = rect.top >= 0 && rect.bottom <= window.innerHeight
+                // Only scroll if word is not fully visible
+                if (!isVisible) {
+                  wordEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                  lastScrollTime.current = now
+                }
+              }
+            }
+            
             localWordIndex++
           } else if (localWordIndex >= segmentWordCount) {
             if (highlightIntervalRef.current) {
@@ -277,6 +299,10 @@ both your power and your responsibility.`
           highlightIntervalRef.current = null
         }
         
+        // Fade out last highlighted word
+        setPreviousWordIndex(currentWordIndex)
+        setTimeout(() => setCurrentWordIndex(-1), 100)
+        
         // Add mysterious pause between segments (sometimes)
         const pauseTime = Math.random() < 0.3 ? 300 + Math.random() * 400 : 100 + Math.random() * 200
         
@@ -287,6 +313,7 @@ both your power and your responsibility.`
             setIsPlaying(false)
             setIsPaused(false)
             setCurrentWordIndex(-1)
+            setPreviousWordIndex(-1)
             if (glitchInterval) clearInterval(glitchInterval)
             if (highlightIntervalRef.current) {
               clearInterval(highlightIntervalRef.current)
@@ -343,6 +370,12 @@ both your power and your responsibility.`
       synthRef.current.cancel()
       setIsPlaying(false)
       setIsPaused(false)
+      setCurrentWordIndex(-1)
+      setPreviousWordIndex(-1)
+    }
+    if (highlightIntervalRef.current) {
+      clearInterval(highlightIntervalRef.current)
+      highlightIntervalRef.current = null
     }
     // Reset any visual glitches
     const title = document.querySelector('h3')
@@ -466,31 +499,35 @@ both your power and your responsibility.`
                               return <span key={`${pIdx}-${wIdx}`}>{wordOrSpace}</span>
                             }
                             
-                            const isHighlighted = (currentWordIndex_local - 1) === currentWordIndex
+                            const wordIdx = currentWordIndex_local - 1
+                            const isHighlighted = wordIdx === currentWordIndex
+                            const wasHighlighted = wordIdx === previousWordIndex && previousWordIndex !== currentWordIndex
                             
                             return (
                               <span
                                 key={`${pIdx}-${wIdx}`}
                                 ref={(el) => {
                                   if (el && isWord) {
-                                    wordElementsRef.current.set(currentWordIndex_local - 1, el)
-                                    // Scroll into view if highlighted
-                                    if (isHighlighted) {
-                                      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                                    }
+                                    wordElementsRef.current.set(wordIdx, el)
                                   }
                                 }}
                                 className={`
-                                  transition-all duration-75
+                                  transition-all duration-200 ease-in-out
                                   ${isHighlighted 
-                                    ? 'text-green-400 font-bold bg-green-400/20 px-1 rounded' 
-                                    : 'text-green-300'
+                                    ? 'text-green-400 font-bold bg-green-400/30 px-1.5 rounded-md scale-105' 
+                                    : wasHighlighted
+                                    ? 'text-green-400/60 bg-green-400/10 px-1 rounded scale-100'
+                                    : 'text-green-300 scale-100'
                                   }
                                 `}
                                 style={{
                                   textShadow: isHighlighted 
-                                    ? '0 0 8px rgba(0, 255, 0, 0.6), 0 0 12px rgba(0, 255, 0, 0.4)' 
+                                    ? '0 0 10px rgba(0, 255, 0, 0.8), 0 0 15px rgba(0, 255, 0, 0.6), 0 0 20px rgba(0, 255, 0, 0.4)' 
+                                    : wasHighlighted
+                                    ? '0 0 4px rgba(0, 255, 0, 0.3)'
                                     : 'none',
+                                  transform: isHighlighted ? 'scale(1.05)' : 'scale(1)',
+                                  display: 'inline-block',
                                 }}
                               >
                                 {wordOrSpace}
