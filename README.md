@@ -166,7 +166,39 @@ The development workflow:
 1. **Edit code** in Cursor for local generation and refactoring
 2. **Test agents** via the `/agent` interface
 3. **Review changes** with Claude Code for Web
-4. **Deploy** to Vercel automatically on push
+4. **Auto-sync Claude's changes** back to local (see Sync section)
+5. **Deploy** to Vercel automatically on push
+
+### Claude Code for Web Sync
+
+ZwartifyOS includes automatic sync to pull changes made by Claude Code for Web back to your local codebase.
+
+**Quick Start:**
+
+```bash
+# Start automatic sync watcher (in separate terminal)
+npm run sync:watch
+
+# Or check for changes manually
+npm run sync:check
+
+# Pull all Claude branches
+npm run sync:pull
+```
+
+**Configuration** (in `.env.local`):
+```
+SYNC_ENABLED=true          # Enable/disable auto-sync
+SYNC_INTERVAL=30000        # Polling interval in ms (default: 30s)
+```
+
+**How it works:**
+- Watches for branches matching `claude/*` pattern
+- Periodically checks for new commits
+- Automatically pulls changes when detected
+- Only syncs when working directory is clean (safe)
+
+See the [Sync Workflow Guide](docs/sync-workflow.md) for detailed instructions.
 
 ---
 

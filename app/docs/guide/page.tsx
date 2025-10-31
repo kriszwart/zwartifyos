@@ -302,10 +302,51 @@ export default function UserGuidePage() {
                     <p className="text-green-300">Open PR in Claude Code for Web</p>
                     <p className="text-green-300">Claude reviews → suggests → commits</p>
                     
-                    <p className="text-green-400 mb-2 mt-4"># 4. Auto-Deploy</p>
+                    <p className="text-green-400 mb-2 mt-4"># 4. Auto-Sync (New!)</p>
+                    <p className="text-green-300">npm run sync:watch → Auto-pulls Claude's changes</p>
+                    <p className="text-green-300">Changes appear in your local codebase automatically</p>
+                    
+                    <p className="text-green-400 mb-2 mt-4"># 5. Auto-Deploy</p>
                     <p className="text-green-300">Vercel detects push → builds → deploys</p>
                     <p className="text-green-300">Your site updates instantly</p>
                   </div>
+                </section>
+
+                <section>
+                  <h3 className="text-2xl font-bold mb-4 text-green-400">Auto-Sync Claude's Changes</h3>
+                  <p className="text-green-300 mb-4">
+                    When Claude Code for Web makes changes via GitHub, automatically sync them back to your local codebase.
+                  </p>
+                  
+                  <div className="bg-black/50 border border-green-400/30 p-4 rounded space-y-3">
+                    <div>
+                      <p className="text-green-400 font-bold mb-2">Automatic Sync (Recommended):</p>
+                      <pre className="bg-black/70 border border-green-400/30 p-2 rounded font-mono text-xs mt-2">
+                        npm run sync:watch
+                      </pre>
+                      <p className="text-green-300 text-sm mt-2 ml-4">Runs in background, checks every 30 seconds</p>
+                    </div>
+                    
+                    <div>
+                      <p className="text-green-400 font-bold mb-2">Manual Check:</p>
+                      <pre className="bg-black/70 border border-green-400/30 p-2 rounded font-mono text-xs mt-2">
+                        npm run sync:check
+                      </pre>
+                      <p className="text-green-300 text-sm mt-2 ml-4">One-time check for pending changes</p>
+                    </div>
+                    
+                    <div>
+                      <p className="text-green-400 font-bold mb-2">Pull All Claude Branches:</p>
+                      <pre className="bg-black/70 border border-green-400/30 p-2 rounded font-mono text-xs mt-2">
+                        npm run sync:pull
+                      </pre>
+                      <p className="text-green-300 text-sm mt-2 ml-4">Manually sync all claude/* branches</p>
+                    </div>
+                  </div>
+
+                  <p className="text-green-300 mt-4 text-sm">
+                    <strong className="text-green-400">API Endpoint:</strong> Visit <code className="bg-black/50 px-2 py-1 rounded border border-green-400/30">/api/sync</code> to check sync status
+                  </p>
                 </section>
               </div>
             )}
