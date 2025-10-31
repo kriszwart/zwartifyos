@@ -126,44 +126,123 @@ both your power and your responsibility.`
     // Stop any existing speech
     synthRef.current.cancel()
 
-    const utterance = new SpeechSynthesisUtterance(prometheusText)
-    utteranceRef.current = utterance
+    // Split text into segments for glitch effects
+    const segments = prometheusText.split(/[.!?]\s+/).filter(s => s.trim().length > 0)
+    let segmentIndex = 0
+    let glitchInterval: NodeJS.Timeout | null = null
 
-    // Set voice properties for deep robot voice
-    utterance.rate = 0.85 // Slightly slower for dramatic effect
-    utterance.pitch = 0.3 // Very low pitch for deep voice
-    utterance.volume = 0.9
+    const speakSegment = () => {
+      if (segmentIndex >= segments.length) {
+        setIsPlaying(false)
+        setIsPaused(false)
+        if (glitchInterval) clearInterval(glitchInterval)
+        return
+      }
 
-    // Try to find a deep/robotic voice
-    const voices = synthRef.current.getVoices()
-    const deepVoice = voices.find(
-      (v) =>
-        v.name.toLowerCase().includes("deep") ||
-        v.name.toLowerCase().includes("low") ||
-        v.name.toLowerCase().includes("robot") ||
-        v.name.toLowerCase().includes("synthesizer")
-    ) || voices.find((v) => v.lang.startsWith("en"))
+      const segment = segments[segmentIndex]
+      const utterance = new SpeechSynthesisUtterance(segment)
+      utteranceRef.current = utterance
 
-    if (deepVoice) {
-      utterance.voice = deepVoice
+      // Base settings
+      utterance.rate = 0.8 + Math.random() * 0.15 // 0.8-0.95 (slightly variable)
+      
+      // Mysterious glitchy pitch variations
+      // Occasionally drop to very deep, sometimes rise slightly
+      const pitchVariation = Math.random()
+      if (pitchVariation < 0.2) {
+        // 20% chance: Very deep glitch
+        utterance.pitch = 0.15 + Math.random() * 0.1 // 0.15-0.25 (extremely deep)
+      } else if (pitchVariation < 0.4) {
+        // 20% chance: Slightly higher mysterious tone
+        utterance.pitch = 0.35 + Math.random() * 0.15 // 0.35-0.5 (mysterious)
+      } else {
+        // 60% chance: Normal deep
+        utterance.pitch = 0.25 + Math.random() * 0.15 // 0.25-0.4 (deep)
+      }
+
+      utterance.volume = 0.85 + Math.random() * 0.15 // 0.85-1.0 (slight variation)
+
+      // Try to find a deep/robotic voice
+      const voices = synthRef.current!.getVoices()
+      const deepVoice = voices.find(
+        (v) =>
+          v.name.toLowerCase().includes("deep") ||
+          v.name.toLowerCase().includes("low") ||
+          v.name.toLowerCase().includes("robot") ||
+          v.name.toLowerCase().includes("synthesizer")
+      ) || voices.find((v) => v.lang.startsWith("en"))
+
+      if (deepVoice) {
+        utterance.voice = deepVoice
+      }
+
+      // Add occasional glitch pauses (10% chance per segment)
+      if (Math.random() < 0.1) {
+        utterance.rate = utterance.rate * 0.7 // Slow down significantly
+        utterance.pitch = utterance.pitch * 0.7 // Drop pitch even more
+      }
+
+      utterance.onstart = () => {
+        if (segmentIndex === 0) {
+          setIsPlaying(true)
+          setIsPaused(false)
+        }
+        
+        // Visual glitch effect on title
+        const title = document.querySelector('h3')
+        if (title) {
+          title.style.animation = 'glitch 0.3s'
+          setTimeout(() => {
+            if (title) title.style.animation = ''
+          }, 300)
+        }
+      }
+
+      utterance.onend = () => {
+        segmentIndex++
+        
+        // Add mysterious pause between segments (sometimes)
+        const pauseTime = Math.random() < 0.3 ? 300 + Math.random() * 400 : 100 + Math.random() * 200
+        
+        setTimeout(() => {
+          if (!isPaused && segmentIndex < segments.length) {
+            speakSegment()
+          } else if (segmentIndex >= segments.length) {
+            setIsPlaying(false)
+            setIsPaused(false)
+            if (glitchInterval) clearInterval(glitchInterval)
+          }
+        }, pauseTime)
+      }
+
+      utterance.onerror = () => {
+        segmentIndex++
+        if (segmentIndex < segments.length) {
+          setTimeout(speakSegment, 200)
+        } else {
+          setIsPlaying(false)
+          setIsPaused(false)
+          if (glitchInterval) clearInterval(glitchInterval)
+        }
+      }
+
+      synthRef.current!.speak(utterance)
     }
 
-    utterance.onstart = () => {
-      setIsPlaying(true)
-      setIsPaused(false)
-    }
+    // Start glitch interval for random visual effects
+    glitchInterval = setInterval(() => {
+      if (isPlaying && !isPaused && Math.random() < 0.15) {
+        const title = document.querySelector('h3')
+        if (title) {
+          title.style.textShadow = '2px 2px 0 #ff00ff, -2px -2px 0 #00ffff'
+          setTimeout(() => {
+            if (title) title.style.textShadow = ''
+          }, 150)
+        }
+      }
+    }, 2000)
 
-    utterance.onend = () => {
-      setIsPlaying(false)
-      setIsPaused(false)
-    }
-
-    utterance.onerror = () => {
-      setIsPlaying(false)
-      setIsPaused(false)
-    }
-
-    synthRef.current.speak(utterance)
+    speakSegment()
   }
 
   const pausePrometheus = () => {
@@ -183,6 +262,12 @@ both your power and your responsibility.`
       synthRef.current.cancel()
       setIsPlaying(false)
       setIsPaused(false)
+    }
+    // Reset any visual glitches
+    const title = document.querySelector('h3')
+    if (title) {
+      title.style.animation = ''
+      title.style.textShadow = ''
     }
   }
 
