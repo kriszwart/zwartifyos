@@ -108,6 +108,14 @@ export async function myAgent(input: string) {
 }
 ```
 
+## Skills & Plugins
+
+**Skills** are advanced capabilities that extend your agent beyond basic tools. They're provided through **Plugins**, which can contain skills, custom commands, agents, and hooks.
+
+Skills are more powerful than tools—they can maintain state, contain complex workflows, and provide specialized capabilities like code generation patterns or data analysis workflows.
+
+To use Skills, create a plugin directory and load it in your agent configuration. See the [Documentation](/docs) for detailed instructions on creating plugins and skills.
+
 ## Adding New Tools
 
 Tools automatically register when you add them to `/backend/tools/`. Each tool must export an object with `name`, `description`, and `execute` properties:

@@ -180,6 +180,109 @@ export async function myAgent(input: string) {
               </pre>
             </section>
 
+            {/* Skills */}
+            <section>
+              <h2 className="text-3xl font-bold mb-4 text-green-400 border-b border-green-400/30 pb-2">
+                Skills & Plugins
+              </h2>
+              <p className="text-green-300 mb-4">
+                <strong className="text-green-400">Skills</strong> are reusable capabilities that extend your agent's abilities beyond basic tools. 
+                They are provided through <strong className="text-green-400">Plugins</strong>, which can contain skills, custom commands, agents, and hooks.
+              </p>
+              <p className="text-green-300 mb-4">
+                Skills are more advanced than tools—they can contain complex logic, maintain state, and provide specialized capabilities 
+                like code generation patterns, data analysis workflows, or custom agent behaviors.
+              </p>
+              
+              <h3 className="text-2xl font-bold mb-3 mt-6 text-green-400">Using Skills with Plugins</h3>
+              <p className="text-green-300 mb-4">
+                To use Skills in your agent, you need to load a plugin that contains them. Update <code className="bg-black/50 px-2 py-1 rounded border border-green-400/30">agentClient.ts</code>:
+              </p>
+              <pre className="bg-black/50 border border-green-400/30 p-4 rounded font-mono text-sm overflow-x-auto">
+{`// In agentClient.ts, add plugins to query options:
+const queryGenerator = query({
+  prompt: input,
+  options: {
+    model: "claude-3-5-sonnet-20241022",
+    plugins: [
+      { type: 'local', path: './plugins/my-plugin' }
+    ],
+    ...(Object.keys(mcpServers).length > 0 && { mcpServers }),
+  },
+})`}
+              </pre>
+
+              <h3 className="text-2xl font-bold mb-3 mt-6 text-green-400">Creating a Plugin with Skills</h3>
+              <p className="text-green-300 mb-4">
+                Plugins are directories that contain plugin configuration files. Create a plugin structure:
+              </p>
+              <pre className="bg-black/50 border border-green-400/30 p-4 rounded font-mono text-sm overflow-x-auto">
+{`/plugins
+  /my-plugin
+    plugin.json          # Plugin configuration
+    skills/
+      mySkill.js        # Skill implementation
+    commands/
+      myCommand.js      # Custom commands
+    hooks/
+      myHook.js         # Event hooks`}
+              </pre>
+
+              <p className="text-green-300 mb-4 mt-4">Example plugin configuration:</p>
+              <pre className="bg-black/50 border border-green-400/30 p-4 rounded font-mono text-sm overflow-x-auto">
+{`// plugins/my-plugin/plugin.json
+{
+  "name": "my-plugin",
+  "version": "1.0.0",
+  "description": "Custom plugin with skills",
+  "skills": ["mySkill"],
+  "commands": ["myCommand"]
+}`}
+              </pre>
+
+              <p className="text-green-300 mb-4 mt-4">Example skill implementation:</p>
+              <pre className="bg-black/50 border border-green-400/30 p-4 rounded font-mono text-sm overflow-x-auto">
+{`// plugins/my-plugin/skills/mySkill.js
+export const mySkill = {
+  name: "mySkill",
+  description: "A custom skill that does something advanced",
+  execute: async (context, args) => {
+    // Skill logic here
+    // Can access agent context, maintain state, etc.
+    return "Skill result"
+  }
+}`}
+              </pre>
+
+              <h3 className="text-2xl font-bold mb-3 mt-6 text-green-400">Skills vs Tools</h3>
+              <div className="bg-black/50 border border-green-400/30 p-4 rounded mt-4">
+                <p className="text-green-300 mb-2"><strong className="text-green-400">Tools:</strong></p>
+                <ul className="list-disc list-inside text-green-300 ml-4 mb-4 space-y-1">
+                  <li>Simple, stateless functions</li>
+                  <li>Execute and return results immediately</li>
+                  <li>Best for basic operations (API calls, calculations, etc.)</li>
+                </ul>
+                <p className="text-green-300 mb-2"><strong className="text-green-400">Skills:</strong></p>
+                <ul className="list-disc list-inside text-green-300 ml-4 space-y-1">
+                  <li>Complex capabilities with state and context</li>
+                  <li>Can contain multiple steps or workflows</li>
+                  <li>Best for advanced operations (code patterns, analysis workflows, etc.)</li>
+                </ul>
+              </div>
+
+              <p className="text-green-300 mt-4">
+                Learn more about plugins and skills in the{" "}
+                <a 
+                  href="https://docs.claude.com/en/api/agent-sdk/overview"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-green-400 hover:underline"
+                >
+                  Claude Agent SDK documentation
+                </a>.
+              </p>
+            </section>
+
             {/* API */}
             <section>
               <h2 className="text-3xl font-bold mb-4 text-green-400 border-b border-green-400/30 pb-2">
