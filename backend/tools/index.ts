@@ -11,6 +11,8 @@ const toolModules = [
   import("./helloTool"),
   import("./markdownFormatter"),
   import("./screenshotDescription"),
+  import("./stripeTool"),
+  import("./databaseTool"),
   // Add more tool imports here as needed
 ]
 

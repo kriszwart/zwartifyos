@@ -1,6 +1,21 @@
 import { query, tool, createSdkMcpServer } from "@anthropic-ai/claude-agent-sdk"
 import { z } from "zod"
 
+// Type definitions for SDK response content
+interface TextContent {
+  type: "text"
+  text: string
+}
+
+interface ContentBlock {
+  type: string
+  text?: string
+  [key: string]: unknown
+}
+
+// Type for MCP server instances
+type McpServer = ReturnType<typeof createSdkMcpServer>
+
 // Create and configure agent client
 export const agentClient = {
   /**
@@ -21,7 +36,7 @@ export const agentClient = {
     process.env.ANTHROPIC_API_KEY = apiKey
 
     // Convert tools to MCP format if provided
-    const mcpServers: Record<string, any> = {}
+    const mcpServers: Record<string, McpServer> = {}
     if (options.tools && options.tools.length > 0) {
       const mcpTools = options.tools.map((toolDef) =>
         tool(
@@ -64,10 +79,10 @@ export const agentClient = {
       // Extract text from assistant messages
       if (message.type === "assistant") {
         // SDKAssistantMessage has a message property with content array
-        const content = message.message?.content || []
+        const content = (message.message?.content || []) as ContentBlock[]
         const textContent = content
-          .filter((item: any) => item.type === "text")
-          .map((item: any) => item.text)
+          .filter((item): item is TextContent => item.type === "text")
+          .map((item) => item.text)
           .join("")
         if (textContent) {
           outputText = textContent
