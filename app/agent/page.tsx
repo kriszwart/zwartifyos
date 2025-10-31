@@ -12,10 +12,62 @@ interface Message {
   timestamp: Date
 }
 
+const MYSTICAL_QUOTES = [
+  "Any sufficiently advanced technology is indistinguishable from magic. — Arthur C. Clarke",
+  "The universe is made of stories, not atoms. — Muriel Rukeyser",
+  "In the beginner's mind there are many possibilities, but in the expert's mind there are few. — Shunryu Suzuki",
+  "We are not going into space, we are going home. — Terence McKenna",
+  "The only way to discover the limits of the possible is to go beyond them into the impossible. — Arthur C. Clarke",
+  "Technology is a way of organizing the universe so that man doesn't have to experience it. — Max Frisch",
+  "The cosmos is within us. We are made of star-stuff. — Carl Sagan",
+  "What we observe is not nature itself, but nature exposed to our method of questioning. — Werner Heisenberg",
+  "The map is not the territory. — Alfred Korzybski",
+  "Muddy water, let stand, becomes clear. — Lao Tzu",
+  "The future is already here – it's just not evenly distributed. — William Gibson",
+  "Consciousness is only possible through change; change is only possible through movement. — Aldous Huxley",
+  "We are the facilitators of our own creative evolution. — Bill Hicks",
+  "The Net is a waste of time, and that's exactly what's right about it. — William Gibson",
+  "Reality is that which, when you stop believing in it, doesn't go away. — Philip K. Dick",
+  "The medium is the message. — Marshall McLuhan",
+  "Magic is just science we don't understand yet. — Arthur C. Clarke",
+  "Empty your mind, be formless, shapeless — like water. — Bruce Lee",
+  "The more you know, the less you understand. — Lao Tzu",
+  "Information is not knowledge. Knowledge is not wisdom. — Frank Zappa"
+]
+
 function LoadingGlyph() {
   return (
     <div className="quantum-glyph inline-block text-green-400 text-2xl">
       ⚛
+    </div>
+  )
+}
+
+function MysticalLoadingQuote() {
+  const [currentQuote, setCurrentQuote] = useState(0)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentQuote((prev) => (prev + 1) % MYSTICAL_QUOTES.length)
+    }, 4000) // Change quote every 4 seconds
+
+    return () => clearInterval(interval)
+  }, [])
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-3 justify-center">
+        <LoadingGlyph />
+        <span className="shimmer-text font-mono text-lg font-bold">
+          Channeling Intelligence...
+        </span>
+        <LoadingGlyph />
+      </div>
+      <div className="text-center animate-fade-in">
+        <p className="text-green-300/80 text-sm italic font-serif mystical-glow max-w-md mx-auto">
+          "{MYSTICAL_QUOTES[currentQuote]}"
+        </p>
+      </div>
     </div>
   )
 }
@@ -256,11 +308,9 @@ export default function AgentPage() {
                           Assistant
                         </span>
                       </div>
-                      <div className="px-4 py-3 rounded-lg border-2 bg-green-400/5 border-green-400/30">
-                        <div className="flex items-center gap-2 text-green-400">
-                          <LoadingGlyph />
-                          <span className="font-mono text-sm animate-pulse">Thinking...</span>
-                        </div>
+                      <div className="px-6 py-5 rounded-lg border-2 bg-green-400/5 border-green-400/30"
+                           style={{ boxShadow: "0 0 30px rgba(0, 255, 0, 0.2)" }}>
+                        <MysticalLoadingQuote />
                       </div>
                     </div>
                   </div>
@@ -308,7 +358,8 @@ export default function AgentPage() {
                 >
                   {isLoading ? (
                     <span className="flex items-center gap-2">
-                      <LoadingGlyph /> Processing
+                      <LoadingGlyph />
+                      <span className="shimmer-text">Channeling...</span>
                     </span>
                   ) : (
                     "Send →"
