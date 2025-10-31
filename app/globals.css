@@ -1,8 +1,9 @@
 @import "tailwindcss";
+@import "../styles/animations.css";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #000000;
+  --foreground: #00ff00;
 }
 
 @theme inline {
@@ -12,15 +13,39 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Docs content container utility */
+.docs-container {
+  max-width: 65ch;
+  line-height: 1.7;
+}
+
+.docs-container h2 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.docs-container h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.docs-container p {
+  margin-bottom: 1rem;
+}
+
+.docs-container pre {
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.docs-container ol,
+.docs-container ul {
+  margin-bottom: 1rem;
 }
