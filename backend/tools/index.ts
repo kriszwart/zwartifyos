@@ -9,6 +9,8 @@ type Tool = {
 // Add new tools here as they are created
 const toolModules = [
   import("./helloTool"),
+  import("./markdownFormatter"),
+  import("./screenshotDescription"),
   // Add more tool imports here as needed
 ]
 
