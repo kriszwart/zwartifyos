@@ -37,14 +37,35 @@ export default function Home() {
             ZwartifyOS
           </h1>
 
-          {/* Description */}
-          <p className="text-xl md:text-2xl text-green-300 max-w-2xl mx-auto leading-relaxed mb-4">
-            A full-stack agent template built with Next.js and Claude Agent SDK.
-            Build intelligent applications with modular tools and futuristic interfaces.
-          </p>
-          <p className="text-lg text-green-400/80 max-w-xl mx-auto">
+          {/* Main Value Proposition */}
+          <p className="text-2xl md:text-3xl text-green-400 max-w-3xl mx-auto leading-relaxed mb-6 font-semibold">
             The operating system for building intelligent products.
           </p>
+          
+          {/* Supporting Description */}
+          <p className="text-lg md:text-xl text-green-300 max-w-2xl mx-auto leading-relaxed mb-4">
+            Coordinate the ACCV stack: <strong className="text-green-400">A</strong>gents, <strong className="text-green-400">C</strong>ursor, <strong className="text-green-400">C</strong>laude, <strong className="text-green-400">V</strong>ercel.
+          </p>
+          
+          <p className="text-base md:text-lg text-green-300/80 max-w-xl mx-auto mb-6">
+            Build what took teams. Ship what seemed impossible. Code with intelligence that extends itself.
+          </p>
+          
+          {/* Key Benefits */}
+          <div className="max-w-2xl mx-auto grid md:grid-cols-3 gap-4 text-sm text-green-400/90 mb-8">
+            <div className="flex items-center justify-center space-x-2">
+              <span className="text-green-400">⚡</span>
+              <span>Automated Workflows</span>
+            </div>
+            <div className="flex items-center justify-center space-x-2">
+              <span className="text-green-400">🤖</span>
+              <span>Self-Extending Agents</span>
+            </div>
+            <div className="flex items-center justify-center space-x-2">
+              <span className="text-green-400">🔄</span>
+              <span>Bidirectional Sync</span>
+            </div>
+          </div>
 
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-12">
