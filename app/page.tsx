@@ -42,13 +42,15 @@ export default function Home() {
             The operating system for building intelligent products.
           </p>
           
-          {/* Supporting Description */}
-          <p className="text-lg md:text-xl text-green-300 max-w-2xl mx-auto leading-relaxed mb-4">
-            Coordinate the ACCV stack: <strong className="text-green-400">A</strong>gents, <strong className="text-green-400">C</strong>ursor, <strong className="text-green-400">C</strong>laude, <strong className="text-green-400">V</strong>ercel.
+          {/* Core Value Statement */}
+          <p className="text-lg md:text-xl text-green-300 max-w-3xl mx-auto leading-relaxed mb-4 font-medium">
+            Build solo what once took teams. Ship more, faster. Code with AI that continuously learns and improves with every loop—always evolving, never static.
           </p>
           
-          <p className="text-base md:text-lg text-green-300/80 max-w-xl mx-auto mb-6">
-            Build what took teams. Ship what seemed impossible. Code with intelligence that extends itself.
+          {/* Supporting Description */}
+          <p className="text-base md:text-lg text-green-300/90 max-w-2xl mx-auto leading-relaxed mb-6">
+            Coordinate the ACCV stack: <strong className="text-green-400">A</strong>gents, <strong className="text-green-400">C</strong>ursor, <strong className="text-green-400">C</strong>laude, <strong className="text-green-400">V</strong>ercel. 
+            Automated bidirectional sync connects cloud AI reviews to your local codebase seamlessly.
           </p>
           
           {/* Key Benefits */}
