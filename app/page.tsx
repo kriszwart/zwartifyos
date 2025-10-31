@@ -5,8 +5,62 @@ import { useEffect, useRef, useState } from "react"
 
 export default function Home() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [calendarDate, setCalendarDate] = useState<string>("")
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const blobRefs = useRef<Array<{ x: number; y: number; vx: number; vy: number; size: number }>>([])
+
+  // Calculate different calendar dates
+  useEffect(() => {
+    const birthDate = new Date("2025-10-31")
+    
+    const formats = [
+      // Gregorian (default)
+      `Born October 31st, 2025`,
+      
+      // ISO format
+      `Born 2025-10-31`,
+      
+      // Different regional formats
+      `Born 31 October 2025`, // European
+      `Born Oct 31, 2025`, // US short
+      `Born 2025年10月31日`, // Chinese
+      
+      // Unix timestamp
+      `Born ${Math.floor(birthDate.getTime() / 1000)}`,
+      
+      // Day of year
+      `Born day ${Math.floor((birthDate.getTime() - new Date(birthDate.getFullYear(), 0, 0).getTime()) / 86400000)} of 2025`,
+      
+      // Julian day (approximate)
+      `Born Julian day ${Math.floor(birthDate.getTime() / 86400000) + 2440587.5}`,
+      
+      // Week number
+      `Born week ${getWeekNumber(birthDate)} of 2025`,
+      
+      // Zodiac/Temporal
+      `Born Scorpio season, 2025`,
+      `Born Samhain eve, 2025`,
+    ]
+    
+    // Rotate through formats every 3 seconds
+    let currentIndex = 0
+    setCalendarDate(formats[currentIndex])
+    
+    const interval = setInterval(() => {
+      currentIndex = (currentIndex + 1) % formats.length
+      setCalendarDate(formats[currentIndex])
+    }, 3000)
+    
+    return () => clearInterval(interval)
+  }, [])
+  
+  function getWeekNumber(date: Date): number {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
+    const dayNum = d.getUTCDay() || 7
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum)
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
+    return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7)
+  }
 
   useEffect(() => {
     // Mouse follower
@@ -238,17 +292,22 @@ export default function Home() {
         </div>
 
         {/* Footer */}
-        <footer className="absolute bottom-0 w-full py-6 text-center text-sm text-green-500 opacity-60">
-          <a
-            href="https://github.com/kriszwart/zwartifyos"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-green-400 transition-colors"
-          >
-            GitHub
-          </a>
-          {" • "}
-          <span>MIT License © 2025 Zwartify Design</span>
+        <footer className="absolute bottom-0 w-full py-6 text-center text-sm text-green-500 opacity-60 space-y-2">
+          <div className="transition-opacity duration-500">
+            <span className="text-green-400/70 font-mono text-xs">{calendarDate || "Born October 31st, 2025"}</span>
+          </div>
+          <div>
+            <a
+              href="https://github.com/kriszwart/zwartifyos"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-green-400 transition-colors"
+            >
+              GitHub
+            </a>
+            {" • "}
+            <span>MIT License © 2025 Zwartify Design</span>
+          </div>
         </footer>
       </main>
     </div>
