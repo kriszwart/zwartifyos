@@ -56,7 +56,7 @@ export default function Home() {
             </Link>
             
             <a
-              href="https://github.com"
+              href="https://github.com/kriszwart/zwartifyos"
               target="_blank"
               rel="noopener noreferrer"
               className="relative px-8 py-4 bg-black border-2 border-green-400 text-green-400 font-semibold uppercase tracking-wider 
@@ -89,7 +89,7 @@ export default function Home() {
         {/* Footer */}
         <footer className="absolute bottom-0 w-full py-6 text-center text-sm text-green-500 opacity-60">
           <a
-            href="https://github.com"
+            href="https://github.com/kriszwart/zwartifyos"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-green-400 transition-colors"

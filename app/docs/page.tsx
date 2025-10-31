@@ -80,7 +80,7 @@ VERSION             # Version file`}
               <ol className="list-decimal list-inside space-y-3 text-green-300 ml-4">
                 <li>Clone the repository:
                   <pre className="bg-black/50 border border-green-400/30 p-3 rounded font-mono text-sm mt-2">
-                    git clone https://github.com/zwartifydesign/zwartifyos.git
+                    git clone https://github.com/kriszwart/zwartifyos.git
                   </pre>
                 </li>
                 <li>Copy `.env.example` to `.env.local`:
@@ -279,7 +279,7 @@ Content-Type: application/json
           {/* Footer */}
           <footer className="mt-16 pt-8 border-t border-green-400/30 text-center text-sm text-green-500 opacity-60">
             <a
-              href="https://github.com"
+              href="https://github.com/kriszwart/zwartifyos"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-green-400 transition-colors"

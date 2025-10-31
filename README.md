@@ -19,7 +19,7 @@ ZwartifyOS embodies the philosophy of **modularity, simplicity, and extensibilit
 
 - [📖 Documentation](/docs) - Full documentation and guides
 - [🤖 Agent Interface](/agent) - Interactive agent interface
-- [🔗 GitHub Repository](https://github.com) - Source code (placeholder)
+- [🔗 GitHub Repository](https://github.com/kriszwart/zwartifyos) - Source code
 
 ## Getting Started
 
@@ -27,7 +27,7 @@ ZwartifyOS embodies the philosophy of **modularity, simplicity, and extensibilit
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/zwartifydesign/zwartifyos.git
+git clone https://github.com/kriszwart/zwartifyos.git
 cd zwartifyos
 ```
 
