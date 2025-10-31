@@ -1,13 +1,6 @@
 import { query, tool, createSdkMcpServer } from "@anthropic-ai/claude-agent-sdk"
 import { z } from "zod"
 
-// Get API key from environment
-const apiKey = process.env.CLAUDE_API_KEY
-
-if (!apiKey) {
-  throw new Error("CLAUDE_API_KEY environment variable is required")
-}
-
 // Create and configure agent client
 export const agentClient = {
   /**
@@ -17,6 +10,13 @@ export const agentClient = {
    * @returns Promise with output text
    */
   async run(input: string, options: { tools?: Array<{ name: string; description: string; execute: (...args: unknown[]) => Promise<unknown> }> } = {}) {
+    // Get API key from environment at runtime
+    const apiKey = process.env.CLAUDE_API_KEY
+
+    if (!apiKey) {
+      throw new Error("CLAUDE_API_KEY environment variable is required")
+    }
+
     // Set API key in environment for SDK to pick up
     process.env.ANTHROPIC_API_KEY = apiKey
 
@@ -63,8 +63,14 @@ export const agentClient = {
     for await (const message of queryGenerator) {
       // Extract text from assistant messages
       if (message.type === "assistant") {
-        if (message.text) {
-          outputText = message.text
+        // SDKAssistantMessage has a message property with content array
+        const content = message.message?.content || []
+        const textContent = content
+          .filter((item: any) => item.type === "text")
+          .map((item: any) => item.text)
+          .join("")
+        if (textContent) {
+          outputText = textContent
         }
       }
     }
