@@ -51,8 +51,12 @@ export default function ManifestoPage() {
   const [isLoaded, setIsLoaded] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
+  const [currentWordIndex, setCurrentWordIndex] = useState<number>(-1)
+  const [wordTimings, setWordTimings] = useState<Array<{ word: string; startTime: number }>>([])
   const synthRef = useRef<SpeechSynthesis | null>(null)
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null)
+  const highlightIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const wordElementsRef = useRef<Map<number, HTMLElement>>(new Map())
 
   useEffect(() => {
     setIsLoaded(true)
@@ -125,23 +129,63 @@ both your power and your responsibility.`
 
     // Stop any existing speech
     synthRef.current.cancel()
+    setCurrentWordIndex(-1)
+    if (highlightIntervalRef.current) {
+      clearInterval(highlightIntervalRef.current)
+    }
+
+    // Split text into words with positions
+    const words = prometheusText.split(/(\s+)/).filter(w => w.trim().length > 0 || w.match(/\s+/))
+    let globalWordIndex = 0
+    
+    // Calculate word timings (estimated based on rate)
+    const baseTimePerWord = 200 // milliseconds per word (adjust based on rate)
+    const timings: Array<{ word: string; startTime: number; index: number }> = []
+    let currentTime = 0
+    
+    words.forEach((word, idx) => {
+      if (word.trim().length > 0) {
+        timings.push({
+          word,
+          startTime: currentTime,
+          index: globalWordIndex++
+        })
+        // Estimate time: longer words take more time, punctuation adds pause
+        const wordTime = baseTimePerWord + (word.length * 10)
+        const punctuationBonus = /[.!?]/.test(word) ? 150 : 0
+        currentTime += wordTime + punctuationBonus
+      } else {
+        // Whitespace - minimal time
+        currentTime += 50
+      }
+    })
+    
+    setWordTimings(timings.map(({ word, startTime, index }) => ({ word, startTime })))
 
     // Split text into segments for glitch effects
     const segments = prometheusText.split(/[.!?]\s+/).filter(s => s.trim().length > 0)
     let segmentIndex = 0
+    let segmentStartWordIndex = 0
     let glitchInterval: NodeJS.Timeout | null = null
+    let segmentStartTime = 0
 
     const speakSegment = () => {
       if (segmentIndex >= segments.length) {
         setIsPlaying(false)
         setIsPaused(false)
+        setCurrentWordIndex(-1)
         if (glitchInterval) clearInterval(glitchInterval)
+        if (highlightIntervalRef.current) clearInterval(highlightIntervalRef.current)
         return
       }
 
       const segment = segments[segmentIndex]
       const utterance = new SpeechSynthesisUtterance(segment)
       utteranceRef.current = utterance
+      
+      // Count words in this segment
+      const segmentWords = segment.split(/\s+/).filter(w => w.trim().length > 0)
+      const segmentWordCount = segmentWords.length
 
       // Base settings
       utterance.rate = 0.8 + Math.random() * 0.15 // 0.8-0.95 (slightly variable)
@@ -186,7 +230,32 @@ both your power and your responsibility.`
         if (segmentIndex === 0) {
           setIsPlaying(true)
           setIsPaused(false)
+          globalWordIndex = 0
         }
+        
+        // Start word highlighting for this segment
+        const segmentStartIndex = segmentStartWordIndex
+        let localWordIndex = 0
+        
+        // Clear any existing highlight interval
+        if (highlightIntervalRef.current) {
+          clearInterval(highlightIntervalRef.current)
+        }
+        
+        // Calculate timing based on utterance rate
+        const baseDelay = baseTimePerWord / (utterance.rate || 0.85)
+        
+        // Start highlighting words in this segment
+        highlightIntervalRef.current = setInterval(() => {
+          if (localWordIndex < segmentWordCount && !isPaused) {
+            setCurrentWordIndex(segmentStartIndex + localWordIndex)
+            localWordIndex++
+          } else if (localWordIndex >= segmentWordCount) {
+            if (highlightIntervalRef.current) {
+              clearInterval(highlightIntervalRef.current)
+            }
+          }
+        }, baseDelay)
         
         // Visual glitch effect on title
         const title = document.querySelector('h3')
@@ -199,7 +268,14 @@ both your power and your responsibility.`
       }
 
       utterance.onend = () => {
+        segmentStartWordIndex += segmentWordCount
         segmentIndex++
+        
+        // Clear highlight interval for this segment
+        if (highlightIntervalRef.current) {
+          clearInterval(highlightIntervalRef.current)
+          highlightIntervalRef.current = null
+        }
         
         // Add mysterious pause between segments (sometimes)
         const pauseTime = Math.random() < 0.3 ? 300 + Math.random() * 400 : 100 + Math.random() * 200
@@ -210,7 +286,12 @@ both your power and your responsibility.`
           } else if (segmentIndex >= segments.length) {
             setIsPlaying(false)
             setIsPaused(false)
+            setCurrentWordIndex(-1)
             if (glitchInterval) clearInterval(glitchInterval)
+            if (highlightIntervalRef.current) {
+              clearInterval(highlightIntervalRef.current)
+              highlightIntervalRef.current = null
+            }
           }
         }, pauseTime)
       }
@@ -362,13 +443,48 @@ both your power and your responsibility.`
                 </div>
                 
                 <div className="space-y-4 text-green-300 font-mono text-base leading-relaxed">
-                  <p className="text-green-400 font-semibold">
-                    They gave us fire. Again.
-                  </p>
-                  
-                  <p>
-                    Not the fire that burns. The fire that <em className="text-green-400">thinks</em>.
-                  </p>
+                  {prometheusText.split(/\n\n+/).map((paragraph, pIdx) => (
+                    <p key={pIdx}>
+                      {paragraph.split(/(\s+)/).map((wordOrSpace, wIdx) => {
+                        const isWord = wordOrSpace.trim().length > 0
+                        const globalIdx = prometheusText
+                          .split(/(\s+)/)
+                          .slice(0, prometheusText.split(/(\s+)/).indexOf(wordOrSpace))
+                          .filter(w => w.trim().length > 0).length
+                        
+                        if (!isWord) {
+                          return <span key={wIdx}>{wordOrSpace}</span>
+                        }
+                        
+                        const isHighlighted = globalIdx === currentWordIndex
+                        
+                        return (
+                          <span
+                            key={wIdx}
+                            ref={(el) => {
+                              if (el && isWord) {
+                                wordElementsRef.current.set(globalIdx, el)
+                              }
+                            }}
+                            className={`
+                              transition-all duration-75
+                              ${isHighlighted 
+                                ? 'text-green-400 font-bold bg-green-400/20 px-1 rounded' 
+                                : 'text-green-300'
+                              }
+                            `}
+                            style={{
+                              textShadow: isHighlighted 
+                                ? '0 0 8px rgba(0, 255, 0, 0.6), 0 0 12px rgba(0, 255, 0, 0.4)' 
+                                : 'none',
+                            }}
+                          >
+                            {wordOrSpace}
+                          </span>
+                        )
+                      })}
+                    </p>
+                  ))}
                   
                   <p>
                     For millennia, creation required teams. Tribes. Hierarchies. Permission structures. 
